@@ -1,14 +1,13 @@
 # Age and Gender Estimation
-This is a Keras implementation of a CNN for estimating age and gender from a face image [1, 2].
-In training, [the IMDB-WIKI dataset](https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/) is used.
-
-- [Aug. 21, 2020] Refactored; use tensorflow.keras
-- [Jun. 30, 2019] [Another PyTorch-based project](https://github.com/yu4u/age-estimation-pytorch) was released
-- [Nov. 12, 2018] Enable Adam optimizer; seems to be better than momentum SGD
-- [Sep. 23, 2018] Demo from directory
-- [Aug. 11, 2018] Add age estimation sub-project [here](age_estimation)
-- [Jul. 5, 2018] The UTKFace dataset became available for training.
-- [Apr. 10, 2018] Evaluation result on the APPA-REAL dataset was added.
+```
+105/1072 [=>............................] - 
+ETA: 5:36 - 
+loss: 4.6134 - 
+pred_gender_loss: 0.4269 - 
+pred_age_loss: 4.1865 - 
+pred_gender_accuracy: 0.8253 - 
+pred_age_accuracy: 0.0336
+```
 
 ## Dependencies
 - Python3.6+
