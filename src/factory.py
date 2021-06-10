@@ -4,6 +4,20 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense
 from keras.applications.resnet50 import ResNet50
 
+# def get_model(cfg):
+#     base_model = None
+#     base_model = ResNet50(
+#                     include_top=False,
+#                     weights='imagenet',
+#                     input_shape=(cfg.model.img_size, cfg.model.img_size, 3),
+#                     pooling="avg")
+#     prediction = Dense(units=101, kernel_initializer="he_normal", use_bias=False, activation="softmax",
+#                        name="pred_age")(base_model.output)
+#     model = Model(inputs=base_model.input, outputs=prediction)
+#     return model
+
+
+# megaage_asian
 def get_model(cfg):
     base_model = None
     base_model = ResNet50(
@@ -11,10 +25,12 @@ def get_model(cfg):
                     weights='imagenet',
                     input_shape=(cfg.model.img_size, cfg.model.img_size, 3),
                     pooling="avg")
-    prediction = Dense(units=101, kernel_initializer="he_normal", use_bias=False, activation="softmax",
-                       name="pred_age")(base_model.output)
-    model = Model(inputs=base_model.input, outputs=prediction)
+    features = base_model.output
+    pred_age = Dense(units=70, activation="softmax", name="pred_age")(features)
+    model = Model(inputs=base_model.input, outputs=pred_age)
+
     return model
+
 
 
 def get_optimizer(cfg):
