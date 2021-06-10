@@ -9,6 +9,9 @@ from tensorflow.keras.callbacks import LearningRateScheduler, ModelCheckpoint
 from src.factory import get_model, get_optimizer, get_scheduler
 from src.generator import ImageSequence
 
+from keras import backend as K
+from tensorflow.keras.optimizers import SGD, Adam
+from tensorflow.keras.models import load_model
 
 @hydra.main(config_path="src/config.yaml")
 def main(cfg):
@@ -29,12 +32,19 @@ def main(cfg):
     strategy = tf.distribute.MirroredStrategy()
 
     with strategy.scope():
-        model = get_model(cfg)
-        opt = get_optimizer(cfg)
+        # model = get_model(cfg)
+        model = load_model("/content/drive/MyDrive/age_wiki/ResNet50_weights.hdf5")
+        # opt = get_optimizer(cfg)
+        value_lr = K.get_value(model.optimizer.learning_rate)
+        print(">>>>>>>>>>>>>>>>>> learning rate: {} >>>>>>>>>>>>>>>>>>".format(value_lr))
+        opt = Adam(learning_rate=K.get_value(model.optimizer.learning_rate))
         scheduler = get_scheduler(cfg)
         model.compile(optimizer=opt,
                       loss=["sparse_categorical_crossentropy", "sparse_categorical_crossentropy"],
                       metrics=['accuracy'])
+        print(">>>>>>>>>>>>>>>>>> START Model info >>>>>>>>>>>>>>>>>>")
+        print(model.optimizer.get_config())
+        print(">>>>>>>>>>>>>>>>>> STOP Model info >>>>>>>>>>>>>>>>>>")
 
     checkpoint_dir_save = "/content/drive/MyDrive/age_wiki/checkpoint"
     filename = "_".join([cfg.model.model_name,
