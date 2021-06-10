@@ -2,11 +2,12 @@ from tensorflow.keras import applications
 from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense
+from keras.applications.resnet50 import ResNet50
 
-
-def get_model():
+def get_model(cfg):
     base_model = None
-    base_model = ResNet50(include_top=False,
+    base_model = ResNet50(
+                    include_top=False,
                     weights='imagenet',
                     input_shape=(cfg.model.img_size, cfg.model.img_size, 3),
                     pooling="avg")

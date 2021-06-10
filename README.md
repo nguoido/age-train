@@ -8,6 +8,12 @@ pred_age_loss: 4.1865 -
 pred_gender_accuracy: 0.8253 - 
 pred_age_accuracy: 0.0336
 ```
+```
+86/1072 [=>............................] - 
+ETA: 5:40 - 
+loss: 4.2022 - 
+accuracy: 0.0338
+```
 
 ## Dependencies
 - Python3.6+

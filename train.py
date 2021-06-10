@@ -29,21 +29,20 @@ def main(cfg):
     strategy = tf.distribute.MirroredStrategy()
 
     with strategy.scope():
-        model = get_model()
+        model = get_model(cfg)
         opt = get_optimizer(cfg)
         scheduler = get_scheduler(cfg)
         model.compile(optimizer=opt,
                       loss=["sparse_categorical_crossentropy", "sparse_categorical_crossentropy"],
                       metrics=['accuracy'])
 
-    checkpoint_dir = Path(to_absolute_path(__file__)).parent.joinpath("checkpoint")
-    checkpoint_dir.mkdir(exist_ok=True)
+    checkpoint_dir_save = "/content/drive/MyDrive/age_wiki/checkpoint"
     filename = "_".join([cfg.model.model_name,
                          str(cfg.model.img_size),
                          "weights.{epoch:02d}-{val_loss:.2f}.hdf5"])
     callbacks.extend([
         LearningRateScheduler(schedule=scheduler),
-        ModelCheckpoint(str(checkpoint_dir) + "/" + filename,
+        ModelCheckpoint(str(checkpoint_dir_save) + "/" + filename,
                         monitor="val_loss",
                         verbose=1,
                         save_best_only=True,
