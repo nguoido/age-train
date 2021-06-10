@@ -10,7 +10,7 @@ from src.factory import get_model, get_optimizer, get_scheduler
 from src.generator import ImageSequence
 
 
-@hydra.main(config_path="src/config.yaml")
+@hydra.main(config_path="src", config_name="config")
 def main(cfg):
     if cfg.wandb.project:
         import wandb
@@ -20,11 +20,13 @@ def main(cfg):
     else:
         callbacks = []
 
-    csv_path = Path(to_absolute_path(__file__)).parent.joinpath("meta", f"{cfg.data.db}.csv")
-    df = pd.read_csv(str(csv_path))
-    train, val = train_test_split(df, random_state=42, test_size=0.1)
-    train_gen = ImageSequence(cfg, train, "train")
-    val_gen = ImageSequence(cfg, val, "val")
+    csv_path_test = Path(to_absolute_path(__file__)).parent.joinpath("meta", f"{cfg.data.db_test}.csv")
+    csv_path_train = Path(to_absolute_path(__file__)).parent.joinpath("meta", f"{cfg.data.db_train}.csv")
+    df_test = pd.read_csv(str(csv_path_test))
+    df_train = pd.read_csv(str(csv_path_train))
+    # train, val = train_test_split(df, random_state=42, test_size=0.1)
+    train_gen = ImageSequence(cfg, df_train, "train")
+    val_gen = ImageSequence(cfg, df_test, "val")
 
     strategy = tf.distribute.MirroredStrategy()
 
@@ -36,7 +38,7 @@ def main(cfg):
                       loss=["sparse_categorical_crossentropy", "sparse_categorical_crossentropy"],
                       metrics=['accuracy'])
 
-    checkpoint_dir_save = "/content/drive/MyDrive/age_wiki/checkpoint"
+    checkpoint_dir_save = "/content/drive/MyDrive/age_asia/checkpoint"
     filename = "_".join([cfg.model.model_name,
                          str(cfg.model.img_size),
                          "weights.{epoch:02d}-{val_loss:.2f}.hdf5"])

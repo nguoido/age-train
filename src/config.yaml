@@ -1,5 +1,7 @@
 data:
-  db: wiki
+  db: megaage
+  db_test: megaage_asian_test
+  db_train: megaage_asian_train
 
 model:
   model_name: ResNet50
