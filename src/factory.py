@@ -4,24 +4,23 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense
 
 
-def get_model(cfg):
-    base_model = getattr(applications, cfg.model.model_name)(
-        include_top=False,
-        input_shape=(cfg.model.img_size, cfg.model.img_size, 3),
-        pooling="avg"
-    )
-    features = base_model.output
-    pred_gender = Dense(units=2, activation="softmax", name="pred_gender")(features)
-    pred_age = Dense(units=101, activation="softmax", name="pred_age")(features)
-    model = Model(inputs=base_model.input, outputs=[pred_gender, pred_age])
+def get_model():
+    base_model = None
+    base_model = ResNet50(include_top=False,
+                    weights='imagenet',
+                    input_shape=(cfg.model.img_size, cfg.model.img_size, 3),
+                    pooling="avg")
+    prediction = Dense(units=101, kernel_initializer="he_normal", use_bias=False, activation="softmax",
+                       name="pred_age")(base_model.output)
+    model = Model(inputs=base_model.input, outputs=prediction)
     return model
 
 
 def get_optimizer(cfg):
     if cfg.train.optimizer_name == "sgd":
-        return SGD(lr=cfg.train.lr, momentum=0.9, nesterov=True)
+        return SGD(learning_rate=cfg.train.lr, momentum=0.9, nesterov=True)
     elif cfg.train.optimizer_name == "adam":
-        return Adam(lr=cfg.train.lr)
+        return Adam(learning_rate=cfg.train.lr)
     else:
         raise ValueError("optimizer name should be 'sgd' or 'adam'")
 

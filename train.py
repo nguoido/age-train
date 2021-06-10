@@ -29,7 +29,7 @@ def main(cfg):
     strategy = tf.distribute.MirroredStrategy()
 
     with strategy.scope():
-        model = get_model(cfg)
+        model = get_model()
         opt = get_optimizer(cfg)
         scheduler = get_scheduler(cfg)
         model.compile(optimizer=opt,

@@ -35,14 +35,12 @@ class ImageSequence(Sequence):
                 img = transforms(image=img)["image"]
 
             imgs.append(img)
-            genders.append(row["genders"])
             ages.append(row["ages"])
 
         imgs = np.asarray(imgs)
-        genders = np.asarray(genders)
         ages = np.asarray(ages)
 
-        return imgs, (genders, ages)
+        return imgs, ages
 
     def __len__(self):
         return len(self.df) // self.batch_size
