@@ -115,7 +115,8 @@ def main():
 
             # predict ages and genders of the detected faces
             results = model.predict(faces)
-            ages = np.arange(0, 101).reshape(101, 1)
+            # ages = np.arange(0, 101).reshape(101, 1)
+            ages = np.arange(0, 70).reshape(70, 1)
             predicted_ages = results.dot(ages).flatten()
 
             # draw results
