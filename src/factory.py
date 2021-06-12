@@ -3,6 +3,7 @@ from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense
 from keras.applications.resnet50 import ResNet50
+import matplotlib.pyplot as plt
 
 # def get_model(cfg):
 #     base_model = None
@@ -38,7 +39,8 @@ def get_model(cfg):
     )
 
     features = base_model.output
-    pred_age = Dense(units=101, activation="softmax", name="pred_age")(features)
+    # pred_age = Dense(units=101, activation="softmax", name="pred_age")(features)
+    pred_age = Dense(units=70, activation="softmax", name="pred_age")(features)
     model = Model(inputs=base_model.input, outputs=pred_age)
     return model
 
@@ -66,3 +68,28 @@ def get_scheduler(cfg):
                 return self.initial_lr * 0.04
             return self.initial_lr * 0.008
     return Schedule(cfg.train.epochs, cfg.train.lr)
+
+
+
+def plot_result(history):
+    acc = history.history['accuracy']
+    val_acc = history.history['val_accuracy']
+    epochs = range(len(acc))
+
+    plt.plot(epochs, acc, 'b', label='Training accuracy')
+    plt.plot(epochs, val_acc, 'r', label='Validation accuracy')
+    plt.title('Training and validation accuracy')
+    plt.legend()
+    plt.savefig('plot_result_1.png')
+    plt.savefig('/content/drive/MyDrive/age_asian/checkpoint/plot_result_1.png')
+    plt.figure()
+
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+    plt.plot(epochs, loss, 'b', label='Training Loss')
+    plt.plot(epochs, val_loss, 'r', label='Validation Loss')
+    plt.title('Training and validation loss')
+    plt.legend()
+    plt.savefig('plot_result_2.png')
+    plt.savefig('/content/drive/MyDrive/age_asian/checkpoint/plot_result_2.png')
+    plt.show()

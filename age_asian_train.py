@@ -6,7 +6,7 @@ import hydra
 from hydra.utils import to_absolute_path
 import tensorflow as tf
 from tensorflow.keras.callbacks import LearningRateScheduler, ModelCheckpoint
-from src.factory import get_model, get_optimizer, get_scheduler
+from src.factory import get_model, get_optimizer, get_scheduler, plot_result
 from src.generator import ImageSequence
 
 @hydra.main(config_path="src", config_name="config")
@@ -31,6 +31,9 @@ def main(cfg):
 
     with strategy.scope():
         model = get_model(cfg)
+        print(">>>>>>>>>>>>>>>>>> START model.summary() >>>>>>>>>>>>>>>>>>")
+        model.summary()
+        print(">>>>>>>>>>>>>>>>>> STOP model.summary() >>>>>>>>>>>>>>>>>>")
         opt = get_optimizer(cfg)
         scheduler = get_scheduler(cfg)
         model.compile(optimizer=opt,
@@ -46,13 +49,14 @@ def main(cfg):
         ModelCheckpoint(str(checkpoint_dir_save) + "/" + filename,
                         monitor="val_loss",
                         verbose=1,
-                        save_best_only=True,
+                        # save_best_only=True,
                         mode="auto")
     ])
 
     model.fit(train_gen, epochs=cfg.train.epochs, callbacks=callbacks, validation_data=val_gen,
               workers=multiprocessing.cpu_count())
 
+    plot_result(model)
 
 if __name__ == '__main__':
     main()
