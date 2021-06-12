@@ -24,7 +24,7 @@ class ImageSequence(Sequence):
     def __getitem__(self, idx):
         sample_indices = self.indices[idx * self.batch_size:(idx + 1) * self.batch_size]
         imgs = []
-        genders = []
+        # genders = []
         ages = []
 
         for _, row in self.df.iloc[sample_indices].iterrows():
