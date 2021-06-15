@@ -1,7 +1,7 @@
 data:
-  db: megaage
-  db_test: megaage_asian_test
-  db_train: megaage_asian_train
+  db: megaagemerge
+  db_test: datasetmerge_test
+  db_train: datasetmerge_train
 
 model:
   model_name: EfficientNetB3

@@ -35,7 +35,9 @@ class ImageSequence(Sequence):
                 img = transforms(image=img)["image"]
 
             imgs.append(img)
-            ages.append(row["ages"])
+            # ages.append(row["ages"])
+            ages.append(row["labels"])
+            
 
         imgs = np.asarray(imgs)
         ages = np.asarray(ages)

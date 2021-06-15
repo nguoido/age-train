@@ -39,8 +39,11 @@ def main(cfg):
         model.compile(optimizer=opt,
                       loss=["sparse_categorical_crossentropy", "sparse_categorical_crossentropy"],
                       metrics=['accuracy'])
-
-    checkpoint_dir_save = "/content/drive/MyDrive/age_asian/checkpoint"
+        print(">>>>>>>>>>>>>>>>>> START Model info >>>>>>>>>>>>>>>>>>")
+        print(model.optimizer.get_config())
+        print(">>>>>>>>>>>>>>>>>> STOP Model info >>>>>>>>>>>>>>>>>>")
+        
+    checkpoint_dir_save = "/content/drive/MyDrive/age_asian_2/checkpoint"
     filename = "_".join([cfg.model.model_name,
                          str(cfg.model.img_size),
                          "weights.{epoch:02d}-{val_loss:.2f}.hdf5"])
@@ -49,7 +52,7 @@ def main(cfg):
         ModelCheckpoint(str(checkpoint_dir_save) + "/" + filename,
                         monitor="val_loss",
                         verbose=1,
-                        # save_best_only=True,
+                        save_best_only=True,
                         mode="auto")
     ])
 

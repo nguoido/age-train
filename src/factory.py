@@ -40,7 +40,7 @@ def get_model(cfg):
 
     features = base_model.output
     # pred_age = Dense(units=101, activation="softmax", name="pred_age")(features)
-    pred_age = Dense(units=70, activation="softmax", name="pred_age")(features)
+    pred_age = Dense(units=7, activation="softmax", name="pred_age")(features)
     model = Model(inputs=base_model.input, outputs=pred_age)
     return model
 
@@ -81,7 +81,7 @@ def plot_result(history):
     plt.title('Training and validation accuracy')
     plt.legend()
     plt.savefig('plot_result_1.png')
-    plt.savefig('/content/drive/MyDrive/age_asian/checkpoint/plot_result_1.png')
+    plt.savefig('/content/drive/MyDrive/age_asian_2/checkpoint/plot_result_1.png')
     plt.figure()
 
     loss = history.history['loss']
@@ -91,5 +91,5 @@ def plot_result(history):
     plt.title('Training and validation loss')
     plt.legend()
     plt.savefig('plot_result_2.png')
-    plt.savefig('/content/drive/MyDrive/age_asian/checkpoint/plot_result_2.png')
+    plt.savefig('/content/drive/MyDrive/age_asian_2/checkpoint/plot_result_2.png')
     plt.show()
