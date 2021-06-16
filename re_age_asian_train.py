@@ -35,7 +35,7 @@ def main(cfg):
 
     with strategy.scope():
         # model = get_model(cfg)
-        model = load_model("/content/drive/MyDrive/age_asian_2/EfficientNetB3_224_weights.11-0.56.hdf5")
+        model = load_model("/content/drive/MyDrive/age_asian_2/checkpoint3/EfficientNetB3_224_weights.07-0.76.hdf5")
         # opt = get_optimizer(cfg)
         value_lr = K.get_value(model.optimizer.learning_rate)
         print(">>>>>>>>>>>>>>>>>> learning rate: {} >>>>>>>>>>>>>>>>>>".format(value_lr))
@@ -49,7 +49,7 @@ def main(cfg):
         print(model.optimizer.get_config())
         print(">>>>>>>>>>>>>>>>>> STOP Model info >>>>>>>>>>>>>>>>>>")
 
-    checkpoint_dir_save = "/content/drive/MyDrive/age_asian_2/checkpoint2"
+    checkpoint_dir_save = "/content/drive/MyDrive/age_asian_2/checkpoint4"
     filename = "_".join([cfg.model.model_name,
                          str(cfg.model.img_size),
                          "weights.{epoch:02d}-{val_loss:.2f}.hdf5"])
@@ -58,7 +58,7 @@ def main(cfg):
         ModelCheckpoint(str(checkpoint_dir_save) + "/" + filename,
                         monitor="val_loss",
                         verbose=1,
-                        save_best_only=True,
+                        # save_best_only=True,
                         mode="auto")
     ])
 
