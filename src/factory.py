@@ -2,6 +2,8 @@ from tensorflow.keras import applications
 from tensorflow.keras.optimizers import SGD, Adam
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Convolution2D, Dense, Input, Flatten, Dropout, MaxPooling2D, BatchNormalization, \
+    GlobalMaxPool2D, Concatenate, GlobalMaxPooling2D, GlobalAveragePooling2D, Lambda
 from keras.applications.resnet50 import ResNet50
 import matplotlib.pyplot as plt
 
@@ -31,18 +33,32 @@ import matplotlib.pyplot as plt
 
 #     return model
 
-def get_model(cfg):
-    base_model = getattr(applications, cfg.model.model_name)(
-        include_top=False,
-        input_shape=(cfg.model.img_size, cfg.model.img_size, 3),
-        pooling="avg"
-    )
+# def get_model(cfg):
+#     base_model = getattr(applications, cfg.model.model_name)(
+#         include_top=False,
+#         input_shape=(cfg.model.img_size, cfg.model.img_size, 3),
+#         pooling="avg"
+#     )
 
-    features = base_model.output
-    # pred_age = Dense(units=101, activation="softmax", name="pred_age")(features)
-    pred_age = Dense(units=7, activation="softmax", name="pred_age")(features)
-    model = Model(inputs=base_model.input, outputs=pred_age)
-    return model
+#     features = base_model.output
+#     # pred_age = Dense(units=101, activation="softmax", name="pred_age")(features)
+#     pred_age = Dense(units=7, activation="softmax", name="pred_age")(features)
+#     model = Model(inputs=base_model.input, outputs=pred_age)
+#     return model
+
+def get_model():
+    n_classes = 7
+    base_model = ResNet50(weights='imagenet', include_top=False)
+    x = base_model.output
+    x = GlobalMaxPooling2D()(x)
+    x = Dropout(0.5)(x)
+    x = Dense(100, activation="relu")(x)
+    x = Dropout(0.5)(x)
+    x = Dense(n_classes, activation="softmax")(x)
+
+    base_model = Model(base_model.input, x, name="base_model")
+    # base_model.compile(loss="sparse_categorical_crossentropy", metrics=['acc'], optimizer="adam")
+    return base_model
 
 def get_optimizer(cfg):
     if cfg.train.optimizer_name == "sgd":

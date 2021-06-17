@@ -4,8 +4,8 @@ data:
   db_train: datasetmerge_train
 
 model:
-  model_name: EfficientNetB3
-  img_size: 224
+  model_name: ResNet50
+  img_size: 256
 
 train:
   optimizer_name: adam

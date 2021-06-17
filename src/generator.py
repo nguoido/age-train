@@ -29,7 +29,8 @@ class ImageSequence(Sequence):
 
         for _, row in self.df.iloc[sample_indices].iterrows():
             img = cv2.imread(str(self.img_dir.joinpath(row["img_paths"])))
-            img = cv2.resize(img, (self.img_size, self.img_size))
+            img = cv2.resize(img, (self.img_size, self.img_size), cv2.INTER_AREA)
+            # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
             if self.mode == "train":
                 img = transforms(image=img)["image"]
