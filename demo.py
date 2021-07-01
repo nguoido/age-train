@@ -1,6 +1,7 @@
 from pathlib import Path
+import pandas as pd
 import cv2
-import dlib
+# import dlib
 import numpy as np
 import argparse
 from contextlib import contextmanager
@@ -8,6 +9,14 @@ from omegaconf import OmegaConf
 from tensorflow.keras.utils import get_file
 from src.factory import get_model
 
+from os import listdir
+from os.path import isfile, join
+import sys
+from moviepy.editor import *
+import shutil
+
+class_age = []
+path_image = []
 
 pretrained_model = "https://github.com/yu4u/age-gender-estimation/releases/download/v0.6/EfficientNetB3_224_weights.11-3.44.hdf5"
 modhash = '6d7f7b7ced093a8b3ef6399163da6ece'
@@ -60,12 +69,15 @@ def yield_images():
             yield img
 
 
+
+
 def yield_images_from_dir(image_dir):
     image_dir = Path(image_dir)
 
     for image_path in image_dir.glob("*.*"):
+        print(str(image_path))
         img = cv2.imread(str(image_path), 1)
-
+        
         if img is not None:
             h, w, _ = img.shape
             r = 640 / max(w, h)
@@ -83,7 +95,7 @@ def main():
                                file_hash=modhash, cache_dir=str(Path(__file__).resolve().parent))
 
     # for face detection
-    detector = dlib.get_frontal_face_detector()
+    # detector = dlib.get_frontal_face_detector()
 
     # load model and weights
     model_name, img_size = Path(weight_file).stem.split("_")[:2]
@@ -95,39 +107,46 @@ def main():
     image_generator = yield_images_from_dir(image_dir) if image_dir else yield_images()
 
     for img in image_generator:
-        input_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img_h, img_w, _ = np.shape(input_img)
+        faces = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # img_h, img_w, _ = np.shape(faces)
+        faces = cv2.resize(faces, (224, 224))
+        faces = faces.reshape(1, 224, 224, 3)
 
-        # detect faces using dlib detector
-        detected = detector(input_img, 1)
-        faces = np.empty((len(detected), img_size, img_size, 3))
+        if 1:
+        # # detect faces using dlib detector
+        # detected = detector(input_img, 1)
+        # faces = np.empty((len(detected), img_size, img_size, 3))
+        # faces = np.empty((len(detected), img_size, img_size, 3))
 
-        if len(detected) > 0:
-            for i, d in enumerate(detected):
-                x1, y1, x2, y2, w, h = d.left(), d.top(), d.right() + 1, d.bottom() + 1, d.width(), d.height()
-                xw1 = max(int(x1 - margin * w), 0)
-                yw1 = max(int(y1 - margin * h), 0)
-                xw2 = min(int(x2 + margin * w), img_w - 1)
-                yw2 = min(int(y2 + margin * h), img_h - 1)
-                cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
-                # cv2.rectangle(img, (xw1, yw1), (xw2, yw2), (255, 0, 0), 2)
-                faces[i] = cv2.resize(img[yw1:yw2 + 1, xw1:xw2 + 1], (img_size, img_size))
+        # if len(detected) > 0:
+        #     for i, d in enumerate(detected):
+        #         x1, y1, x2, y2, w, h = d.left(), d.top(), d.right() + 1, d.bottom() + 1, d.width(), d.height()
+        #         xw1 = max(int(x1 - margin * w), 0)
+        #         yw1 = max(int(y1 - margin * h), 0)
+        #         xw2 = min(int(x2 + margin * w), img_w - 1)
+        #         yw2 = min(int(y2 + margin * h), img_h - 1)
+        #         cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 0), 2)
+        #         # cv2.rectangle(img, (xw1, yw1), (xw2, yw2), (255, 0, 0), 2)
+        #         faces[i] = cv2.resize(img[yw1:yw2 + 1, xw1:xw2 + 1], (img_size, img_size))
 
             # predict ages and genders of the detected faces
             results = model.predict(faces)
             # ages = np.arange(0, 101).reshape(101, 1)
             ages = np.arange(0, 7).reshape(7, 1)
             predicted_ages = results.dot(ages).flatten()
+            predicted_ages.astype(int)
+            class_age.append(str(int(predicted_ages)))
+            path_image.append(1111)
+            print("tuoi: ", str(int(predicted_ages)))
             
-            print("tuoi", predicted_ages)
-
             # draw results
-            for i, d in enumerate(detected):
-                label = str(int(predicted_ages[i]))
-                draw_label(img, (d.left(), d.top()), label)
+            # for i, d in enumerate(detected):
+            #     label = str(int(predicted_ages[i]))
+                
+                # draw_label(img, (d.left(), d.top()), label)
 
         # cv2.imshow("result", img)
-        cv2.imwrite("result.jpg", img)
+        # cv2.imwrite("result.jpg", img)
         # key = cv2.waitKey(-1) if image_dir else cv2.waitKey(30)
 
         # if key == 27:  # ESC
@@ -136,3 +155,11 @@ def main():
 
 if __name__ == '__main__':
     main()
+    outputs = dict(path_image=path_image, class_age=class_age)
+    root_dir = Path(".").parent
+    # output_dir = root_dir.joinpath("meta")
+    output_dir = root_dir.joinpath(".")
+    output_dir.mkdir(exist_ok=True)
+    output_path = output_dir.joinpath(f"train.csv")
+    df = pd.DataFrame(data=outputs)
+    df.to_csv(str(output_path), index=False)
